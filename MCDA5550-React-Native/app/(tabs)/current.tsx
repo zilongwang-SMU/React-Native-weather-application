@@ -1,13 +1,7 @@
 import React, { useEffect, useState } from "react";
-import {
-  ActivityIndicator,
-  Button,
-  SafeAreaView,
-  Text,
-  View,
-} from "react-native";
+import { ActivityIndicator, Button, Text, View } from "react-native";
 import * as Location from "expo-location";
-
+import { SafeAreaView } from "react-native-safe-area-context";
 type CurrentWeather = {
   temperature: number;
   windspeed: number;
@@ -64,7 +58,7 @@ export default function CurrentScreen() {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
 
-      // Handle denial gracefully (required)
+      // Handle denial
       if (status !== "granted") {
         setErrorMsg("Location permission denied. Showing Halifax as fallback.");
 
