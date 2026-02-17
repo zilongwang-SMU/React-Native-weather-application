@@ -95,10 +95,6 @@ export default function CurrentScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, padding: 16 }}>
-      <Text style={{ fontSize: 22, fontWeight: "600", marginBottom: 12 }}>
-        Current Location Weather
-      </Text>
-
       {loading ? (
         <ActivityIndicator size="large" />
       ) : (
