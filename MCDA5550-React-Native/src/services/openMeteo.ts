@@ -11,22 +11,33 @@ export async function geocodeCity(city: string): Promise<{
   lat: number;
   lon: number;
 }> {
-  const q = encodeURIComponent(city.trim());
-  const url = `https://geocoding-api.open-meteo.com/v1/search?name=${q}&count=1&language=en&format=json`;
+  const raw = city.trim();
 
-  const res = await fetch(url);
-  if (!res.ok) throw new Error("Failed to geocode city.");
-  const data = await res.json();
+  const candidates = Array.from(
+    new Set([raw, raw.split(",")[0].trim()])
+  ).filter(Boolean);
 
-  const first = data?.results?.[0];
-  if (!first) throw new Error("City not found. Try another name.");
+  for (const c of candidates) {
+    const q = encodeURIComponent(c);
+    const url = `https://geocoding-api.open-meteo.com/v1/search?name=${q}&count=1&language=en&format=json`;
 
-  return {
-    displayName: [first.name, first.admin1, first.country].filter(Boolean).join(", "),
-    lat: first.latitude,
-    lon: first.longitude,
-  };
+    const res = await fetch(url);
+    if (!res.ok) continue;
+
+    const data = await res.json();
+    const first = data?.results?.[0];
+    if (first) {
+      return {
+        displayName: [first.name, first.admin1, first.country].filter(Boolean).join(", "),
+        lat: first.latitude,
+        lon: first.longitude,
+      };
+    }
+  }
+
+  throw new Error("City not found. Try another name.");
 }
+
 
 export async function fetchCurrentWeather(lat: number, lon: number): Promise<CurrentWeather> {
   const url =
